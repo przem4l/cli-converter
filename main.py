@@ -1,7 +1,4 @@
-import sys
-import os
-from converter.image_processor import ImageConverter
+from cli.commands import app
 
-def main():
-  print("OK")
-  
+if __name__ == "__main__":
+    app()

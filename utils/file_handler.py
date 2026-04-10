@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 class FileHandler:
     def __init__(self, input_path: str, output_path: str):
         self.input_path = input_path
@@ -28,3 +29,6 @@ class FileHandler:
 
     def input_name(self):
         return Path(self.input_path).stem
+    
+    def output_name(self):
+        return Path(self.output_path).stem
