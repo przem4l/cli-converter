@@ -1,3 +1,4 @@
+import os
 from PIL import Image
 from utils.file_handler import FileHandler
 
@@ -14,6 +15,7 @@ class ImageConverter(FileHandler):
         optimize,
         rotate,
         overwrite,
+        delete,
     ):
         super().__init__(input_path, output_path)
         self.quality = quality
@@ -23,10 +25,25 @@ class ImageConverter(FileHandler):
         self.optimize = optimize
         self.rotate = rotate
         self.overwrite = overwrite
+        self.delete = delete
 
     def convert(self):
         img = Image.open(self.input_path)
+        width, height = img.size
         if self.output_ext == "JPEG":
             img = img.convert("RGB")
-        img.resize(self.resize)
+        if self.resize(0) != width and self.resize(1) != height:
+            img = img.convert("L")
+        if self.rotate != 0:
+            img = img.rotate(self.rotate, expand=True)
+        if self.resize and self.keep_aspect_ratio:
+            img.thumbnail(self.resize)
+        elif self.resize and not self.keep_aspect_ratio:
+            img = img.resize(self.resize)
+        img.save(self.output_path, quality=self.quality, optimize=self.optimize)
+        if os.path.exists(self.output_path) and not self.overwrite:
+            print("Plik istnieje, pomijam...")
+            return
         img.save(self.output_name, self.input_ext)
+        if self.delete:
+            os.remove(self.input_path)

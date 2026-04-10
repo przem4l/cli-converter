@@ -5,16 +5,39 @@ from cli.display import progress_bar
 
 app = typer.Typer()
 
+def validate_hw(height, width):
+    if height <= 0 or width <= 0:
+        raise Exception("Resolution must be a positive number!")
+    return (height, width)
 
 @app.command()
 def convert(
     input_path: str = typer.Option(..., "--input", "-i"),
     output_path: str = typer.Option(..., "--output", "-o"),
-    quality: int = typer.Option(..., "--quality", "-q"),
-    grayscale: bool = typer.Option(..., "--grayscale", "-g"),
+    quality: int = typer.Option(95, "--quality", "-q"),
+    height: int = typer.Option(..., "--height", "-h"),
+    width: int = typer.Option(..., "--width", "-w"),
+    grayscale: bool = typer.Option(False, "--grayscale", "-g"),
+    keep_aspect_ratio: bool = typer.Option(False, "--keep", "-k"),
+    optimize: bool = typer.Option(False, "--optimize", "-o"),
+    rotate: int = typer.Option(0, "--rotate", "-r"),
+    overwrite: bool = typer.Option(False, "--overwrite", "-v"),
+    delete: bool = typer.Option(False, "--delete", "-d"),
 ):
+    resize = validate_hw(height, width)
     try:
-        converter = ImageConverter(input_path, output_path, quality, grayscale)
+        converter = ImageConverter(
+            input_path,
+            output_path,
+            quality,
+            resize,
+            grayscale,
+            keep_aspect_ratio,
+            optimize,
+            rotate,
+            overwrite,
+            delete,
+        )
         converter.process()
     except Exception as e:
         typer.echo(f"Error: {e}")
@@ -26,9 +49,17 @@ def convert(
 def batch(
     input_dir: str = typer.Option(..., "--input", "-i"),
     output_dir: str = typer.Option(..., "--output", "-o"),
-    quality: int = typer.Option(..., "--quality", "-q"),
-    grayscale: bool = typer.Option(..., "--grayscale", "-g"),
+    quality: int = typer.Option(95, "--quality", "-q"),
+    height: int = typer.Option(..., "--height", "-h"),
+    width: int = typer.Option(..., "--width", "-w"),
+    grayscale: bool = typer.Option(False, "--grayscale", "-g"),
+    keep_aspect_ratio: bool = typer.Option(False, "--keep", "-k"),
+    optimize: bool = typer.Option(False, "--optimize", "-o"),
+    rotate: int = typer.Option(0, "--rotate", "-r"),
+    overwrite: bool = typer.Option(False, "--overwrite", "-v"),
+    delete: bool = typer.Option(False, "--delete", "-d"),
 ):
+    resize = validate_hw(height, width)
     files = [
         f
         for f in os.listdir(input_dir)
@@ -45,7 +76,13 @@ def batch(
             input_path=in_path,
             output_path=out_path,
             quality=quality,
+            resize=resize,
             grayscale=grayscale,
+            keep_aspect_ratio=keep_aspect_ratio,
+            optimize=optimize,
+            rotate=rotate,
+            overwrite=overwrite,
+            delete=delete,
         )
         converter.process()
     except Exception as e:
