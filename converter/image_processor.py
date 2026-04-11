@@ -29,11 +29,11 @@ class ImageConverter(FileHandler):
 
     def convert(self):
         if os.path.exists(self.output_path) and not self.overwrite:
-            print("Plik istnieje, pomijam...")
+            print("File exists, skipping...")
             return
 
         img = Image.open(self.input_path)
-        if self.output_ext() in [".jpg", ".jpeg"]:
+        if self.output_ext in [".jpg", ".jpeg"]:
             img = img.convert("RGB")
         if self.grayscale:
             img = img.convert("L")
@@ -43,7 +43,7 @@ class ImageConverter(FileHandler):
             img.thumbnail(self.resize)
         elif self.resize and not self.keep_aspect_ratio:
             img = img.resize(self.resize)
-            
+
         img.save(self.output_path, quality=self.quality, optimize=self.optimize)
         if self.delete:
             os.remove(self.input_path)

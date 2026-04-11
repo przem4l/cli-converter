@@ -206,5 +206,19 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-*.jpg
 *.png
+*.jpg
+*.jpeg
+*.webp
+*.heic
+*.raw
+
+*.pdf
+*.docx
+*.odt
+*.txt
+
+*.mp3
+*.wav
+*.flac
+*.aac
