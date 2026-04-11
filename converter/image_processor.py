@@ -29,7 +29,7 @@ class ImageConverter(FileHandler):
 
     def convert(self):
         if os.path.exists(self.output_path) and not self.overwrite:
-            print("Plik istnieje, pomijam...")
+            print("File exists, skipping...")
             return
 
         img = Image.open(self.input_path)
