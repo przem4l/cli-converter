@@ -13,23 +13,36 @@ class FileHandler:
     def validate(self):
         if not os.path.exists(self.input_path):
             raise FileNotFoundError("Input file does not exist!")
-        if (self.output_ext in self.ext_docs and self.input_ext not in self.ext_docs) or (self.input_ext in self.ext_docs and self.output_ext not in self.ext_docs):
+        if (
+            self.output_ext in self.ext_docs and self.input_ext not in self.ext_docs
+        ) or (self.input_ext in self.ext_docs and self.output_ext not in self.ext_docs):
             raise Exception("This type of conversion is not avaliable!")
-        if (self.output_ext in self.ext_image and self.input_ext not in self.ext_image) or (self.input_ext in self.ext_image and self.output_ext not in self.ext_image):
+        if (
+            self.output_ext in self.ext_image and self.input_ext not in self.ext_image
+        ) or (
+            self.input_ext in self.ext_image and self.output_ext not in self.ext_image
+        ):
             raise Exception("This type of conversion is not avaliable!")
-        if self.output_ext not in self.ext_docs or self.output_ext not in self.ext_image:
+        if (
+            self.output_ext not in self.ext_docs
+            and self.output_ext not in self.ext_image
+        ):
             raise Exception("Wrong output file extenstion!")
-        if self.input_ext not in self.ext_docs or self.output_ext not in self.ext_image:
+        if self.input_ext not in self.ext_docs and self.input_ext not in self.ext_image:
             raise Exception("Wrong input file extension!")
-    @property    
+
+    @property
     def input_ext(self):
         return Path(self.input_path).suffix.lower()
+
     @property
     def output_ext(self):
         return Path(self.output_path).suffix.lower()
+
     @property
     def input_name(self):
         return Path(self.input_path).stem
-    @property 
+
+    @property
     def output_name(self):
         return Path(self.output_path).stem
