@@ -17,21 +17,16 @@ class ImageConverter(FileHandler):
         overwrite,
         delete,
     ):
-        super().__init__(input_path, output_path)
+        super().__init__(input_path, output_path, overwrite=overwrite)
         self.quality = quality
         self.resize = resize
         self.grayscale = grayscale
         self.keep_aspect_ratio = keep_aspect_ratio
         self.optimize = optimize
         self.rotate = rotate
-        self.overwrite = overwrite
         self.delete = delete
 
     def convert(self):
-        if os.path.exists(self.output_path) and not self.overwrite:
-            print("File exists, skipping...")
-            return
-
         img = Image.open(self.input_path)
         if self.output_ext in [".jpg", ".jpeg"]:
             img = img.convert("RGB")

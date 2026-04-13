@@ -3,10 +3,11 @@ from utils.file_handler import FileHandler
 
 
 class DocsConverter(FileHandler):
-    def __init__(self, input_path, output_path):
-        super().__init__(input_path, output_path)
+    def __init__(self, input_path, output_path, overwrite=False):
+        super().__init__(input_path, output_path, overwrite=overwrite)
 
     def convert(self):
+        self.validate_libraries()
         if self.input_ext == ".pdf" and self.output_ext == ".txt":
             self.pdf_to_txt()
         else:
