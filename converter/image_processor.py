@@ -27,7 +27,24 @@ class ImageConverter(FileHandler):
         self.delete = delete
 
     def convert(self):
-        img = Image.open(self.input_path)
+        if self.input_ext == ".heic":
+            try:
+                from pillow_heif import register_heif_opener
+                register_heif_opener()
+            except ImportError:
+                raise ImportError("Install 'pillow-heif' to process HEIC files (pip install pillow-heif).")
+                
+        if self.input_ext == ".raw":
+            try:
+                import rawpy
+            except ImportError:
+                raise ImportError("Install 'rawpy' to process RAW files (pip install rawpy).")
+            with rawpy.imread(self.input_path) as raw:
+                rgb = raw.postprocess()
+                img = Image.fromarray(rgb)
+        else:
+            img = Image.open(self.input_path)
+
         if self.output_ext in [".jpg", ".jpeg"]:
             img = img.convert("RGB")
         if self.grayscale:

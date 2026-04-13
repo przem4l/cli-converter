@@ -6,7 +6,7 @@ from converter.audio_processor import AudioConverter
 from utils.file_handler import FileHandler
 from cli.display import progress_bar
 
-app = typer.Typer(help="A versatile File Converter CLI for Images and Documents.")
+app = typer.Typer(help="A versatile File Converter CLI for Images, Documents and Audio.")
 
 image_app = typer.Typer(
     help="Commands for image processing (JPG/JPEG, PNG, WEBP, HEIC, RAW)."

@@ -1,6 +1,6 @@
+import shutil
 from utils.file_handler import FileHandler
 from pydub import AudioSegment
-
 
 class AudioConverter(FileHandler):
   def __init__(
@@ -23,6 +23,9 @@ class AudioConverter(FileHandler):
     self.validate_values()
 
   def convert(self):
+    if not shutil.which("ffmpeg") and not shutil.which("avconv"):
+      raise EnvironmentError("FFmpeg is missing! Please install FFmpeg and add it to your system PATH.")
+
     audio = AudioSegment.from_file(self.input_path)
 
     if self.trim > 0:
@@ -30,17 +33,17 @@ class AudioConverter(FileHandler):
         raise ValueError("Trim duration is larger than audio duration")
       audio = audio[self.trim :]
 
-      if self.gain != 0:
-        audio = audio + self.gain
+    if self.gain != 0:
+      audio = audio + self.gain
 
-      if self.channels:
-        audio = audio.set_channels(self.channels)
+    if self.channels:
+      audio = audio.set_channels(self.channels)
 
-      if self.sample_rate:
-        audio = audio.set_frame_rate(self.sample_rate)
+    if self.sample_rate:
+      audio = audio.set_frame_rate(self.sample_rate)
 
-      out_format = self.output_ext.replace(".", "")
-      audio.export(self.output_path, format=out_format, bitrate=self.bitrate)
+    out_format = self.output_ext.replace(".", "")
+    audio.export(self.output_path, format=out_format, bitrate=self.bitrate)
 
   def validate_values(self):
     if self.bitrate not in ["128k", "192k", "256k", "320k"]:
