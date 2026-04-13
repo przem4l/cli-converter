@@ -39,19 +39,19 @@ class FileHandler:
         if (
             self.output_ext in self.ext_docs and self.input_ext not in self.ext_docs
         ) or (self.input_ext in self.ext_docs and self.output_ext not in self.ext_docs):
-            raise Exception("This type of conversion is not avaliable!")
+            raise Exception("This type of conversion is not available!")
         if (
             self.output_ext in self.ext_image and self.input_ext not in self.ext_image
         ) or (
             self.input_ext in self.ext_image and self.output_ext not in self.ext_image
         ):
-            raise Exception("This type of conversion is not avaliable!")
+            raise Exception("This type of conversion is not available!")
         if (
             self.output_ext in self.ext_audio and self.input_ext not in self.ext_audio
         ) or (
             self.input_ext in self.ext_audio and self.output_ext not in self.ext_audio
         ):
-            raise Exception("This type of conversion is not avaliable!")
+            raise Exception("This type of conversion is not available!")
         if (
             self.output_ext not in self.ext_docs
             and self.output_ext not in self.ext_image

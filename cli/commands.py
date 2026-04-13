@@ -6,7 +6,9 @@ from converter.audio_processor import AudioConverter
 from utils.file_handler import FileHandler
 from cli.display import progress_bar
 
-app = typer.Typer(help="A versatile File Converter CLI for Images, Documents and Audio.")
+app = typer.Typer(
+    help="A versatile File Converter CLI for Images, Documents and Audio."
+)
 
 image_app = typer.Typer(
     help="Commands for image processing (JPG/JPEG, PNG, WEBP, HEIC, RAW)."
@@ -55,8 +57,12 @@ def convert_image(
     quality: int = typer.Option(
         95, "--quality", "-q", help="Output image quality. [0, 100]"
     ),
-    height: int = typer.Option(None, "--height", "-h", help="Target height in pixels. (0, ∞)"),
-    width: int = typer.Option(None, "--width", "-w", help="Target width in pixels. (0, ∞)"),
+    height: int = typer.Option(
+        None, "--height", "-h", help="Target height in pixels. (0, ∞)"
+    ),
+    width: int = typer.Option(
+        None, "--width", "-w", help="Target width in pixels. (0, ∞)"
+    ),
     grayscale: bool = typer.Option(
         False, "--grayscale", "-g", help="Convert image to grayscale."
     ),
@@ -112,7 +118,10 @@ def batch_images(
         False, "--overwrite", "-v", help="Overwrite existing files in output directory."
     ),
     format: str = typer.Option(
-        None, "--format", "-f", help="Target image format. {png, jpg, jpeg, webp, heic, raw}"
+        None,
+        "--format",
+        "-f",
+        help="Target image format. {png, jpg, jpeg, webp, heic, raw}",
     ),
 ):
     valid_ext = FileHandler.EXT_IMAGE

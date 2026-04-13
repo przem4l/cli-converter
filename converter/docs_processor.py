@@ -25,15 +25,29 @@ class DocsConverter(FileHandler):
             file.write(text)
 
     def pandoc_convert(self):
-        out_format = "plain" if self.output_ext == ".txt" else self.output_ext.strip(".")
+        out_format = (
+            "plain" if self.output_ext == ".txt" else self.output_ext.strip(".")
+        )
+        in_format = (
+            "markdown" if self.input_ext == ".txt" else self.input_ext.strip(".")
+        )
         try:
             pypandoc.convert_file(
-                self.input_path, out_format, outputfile=self.output_path
+                self.input_path,
+                out_format,
+                format=in_format,
+                outputfile=self.output_path,
             )
         except RuntimeError as e:
             error_message = str(e).lower()
-            if "pdflatex" in error_message or "pdf-engine" in error_message or "pdf engine" in error_message:
-                raise Exception("PDF export requires a PDF engine (e.g. MiKTeX, wkhtmltopdf) installed on your system.")
+            if (
+                "pdflatex" in error_message
+                or "pdf-engine" in error_message
+                or "pdf engine" in error_message
+            ):
+                raise Exception(
+                    "PDF export requires a PDF engine (e.g. MiKTeX, wkhtmltopdf) installed on your system."
+                )
             raise e
 
     def validate_libraries(self):

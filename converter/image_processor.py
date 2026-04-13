@@ -30,15 +30,20 @@ class ImageConverter(FileHandler):
         if self.input_ext == ".heic":
             try:
                 from pillow_heif import register_heif_opener
+
                 register_heif_opener()
             except ImportError:
-                raise ImportError("Install 'pillow-heif' to process HEIC files (pip install pillow-heif).")
-                
+                raise ImportError(
+                    "Install 'pillow-heif' to process HEIC files (pip install pillow-heif)."
+                )
+
         if self.input_ext == ".raw":
             try:
                 import rawpy
             except ImportError:
-                raise ImportError("Install 'rawpy' to process RAW files (pip install rawpy).")
+                raise ImportError(
+                    "Install 'rawpy' to process RAW files (pip install rawpy)."
+                )
             with rawpy.imread(self.input_path) as raw:
                 rgb = raw.postprocess()
                 img = Image.fromarray(rgb)
