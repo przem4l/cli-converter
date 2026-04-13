@@ -3,16 +3,39 @@ from pathlib import Path
 
 
 class FileHandler:
-    def __init__(self, input_path, output_path):
+    EXT_DOCS = (".docx", ".pdf", ".txt", ".odt")
+    EXT_IMAGE = (".png", ".jpg", ".jpeg", ".webp", ".heic", ".raw")
+    EXT_AUDIO = (".mp3", ".wav", ".ogg", ".flac")
+
+    def __init__(self, input_path, output_path, overwrite=False):
         self.input_path = input_path
         self.output_path = output_path
-        self.ext_docs = [".docx", ".pdf", ".txt", ".odt"]
-        self.ext_image = [".png", ".jpg", ".jpeg", ".webp", ".heic", ".raw"]
+        self.overwrite = overwrite
+        self.ext_docs = self.EXT_DOCS
+        self.ext_image = self.EXT_IMAGE
+        self.ext_audio = self.EXT_AUDIO
         self.validate()
 
     def validate(self):
+        input_abs = os.path.abspath(self.input_path)
+        output_abs = os.path.abspath(self.output_path)
+
         if not os.path.exists(self.input_path):
             raise FileNotFoundError("Input file does not exist!")
+
+        if input_abs == output_abs and not self.overwrite:
+            raise FileExistsError(
+                "Input and output paths are the exact same! Use --overwrite to attempt in-place modification."
+            )
+
+        if (
+            os.path.exists(output_abs)
+            and input_abs != output_abs
+            and not self.overwrite
+        ):
+            raise FileExistsError(
+                f"Output file {self.output_path} already exists! Use --overwrite to modify it."
+            )
         if (
             self.output_ext in self.ext_docs and self.input_ext not in self.ext_docs
         ) or (self.input_ext in self.ext_docs and self.output_ext not in self.ext_docs):
@@ -24,11 +47,22 @@ class FileHandler:
         ):
             raise Exception("This type of conversion is not avaliable!")
         if (
+            self.output_ext in self.ext_audio and self.input_ext not in self.ext_audio
+        ) or (
+            self.input_ext in self.ext_audio and self.output_ext not in self.ext_audio
+        ):
+            raise Exception("This type of conversion is not avaliable!")
+        if (
             self.output_ext not in self.ext_docs
             and self.output_ext not in self.ext_image
+            and self.output_ext not in self.ext_audio
         ):
             raise Exception("Wrong output file extenstion!")
-        if self.input_ext not in self.ext_docs and self.input_ext not in self.ext_image:
+        if (
+            self.input_ext not in self.ext_docs
+            and self.input_ext not in self.ext_image
+            and self.input_ext not in self.ext_audio
+        ):
             raise Exception("Wrong input file extension!")
 
     @property
