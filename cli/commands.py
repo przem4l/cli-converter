@@ -4,8 +4,13 @@ from converter.image_processor import ImageConverter
 from converter.docs_processor import DocsConverter
 from converter.audio_processor import AudioConverter
 from converter.video_processor import VideoConverter
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 from utils.file_handler import FileHandler
 from cli.display import progress_bar
+
+console = Console()
 
 app = typer.Typer(
     help="A versatile File Converter CLI for Images, Documents and Audio."
@@ -25,10 +30,10 @@ app.add_typer(video_app, name="video")
 
 
 def validate_hw(height: int, width: int):
-    if height is None or width is None:
+    if height is None and width is None:
         return None
-    if height <= 0 or width <= 0:
-        raise Exception("Resolution must be a positive number!")
+    if (height is not None and height <= 0) or (width is not None and width <= 0):
+        raise ValueError("Dimensions must be positive integers!")
     return (width, height)
 
 
@@ -51,6 +56,8 @@ def run_batch_conversion(
     input_dir, output_dir, valid_ext, converter_class, format, overwrite, **kwargs
 ):
     files = prepare_batch(input_dir, output_dir, valid_ext)
+    total_files = len(files)
+    failed_files = 0
 
     for file in progress_bar(files, desc="Converting"):
         in_path = os.path.join(input_dir, file)
@@ -62,9 +69,108 @@ def run_batch_conversion(
             )
             converter.convert()
         except Exception as e:
+            failed_files += 1
             typer.echo(f"Failed to process {file}: {e}")
 
-    typer.echo("Batch conversion completed.")
+    if total_files > 0 and failed_files == total_files:
+        typer.echo(f"Batch conversion failed: All {total_files} files encountered errors.")
+        raise typer.Exit(code=1)
+    elif failed_files > 0:
+        typer.echo(f"Batch conversion completed with {failed_files} errors out of {total_files} files.")
+    else:
+        typer.echo("Batch conversion completed successfully.")
+
+
+@app.command("interactive", help="Enter interactive mode.")
+def interactive_mode():
+    console.print(
+        Panel("[bold cyan]CLI Converter - Interactive Mode[/bold cyan]", expand=False)
+    )
+
+    table = Table(show_header=False, box=None)
+    table.add_row("[1]", "Image Conversion")
+    table.add_row("[2]", "Document Conversion")
+    table.add_row("[3]", "Audio Conversion")
+    table.add_row("[4]", "Video Conversion")
+    table.add_row("[q]", "Quit")
+    console.print(table)
+
+    choice = typer.prompt("Choose an option", default="1")
+
+    if choice == "q":
+        raise typer.Exit()
+
+    if choice not in ["1", "2", "3", "4"]:
+        console.print("[bold red]Invalid option![/bold red]")
+        return
+
+    input_path = typer.prompt("Enter input file or directory path", default=".")
+
+    if not os.path.exists(input_path):
+        console.print(
+            f"[bold red]Error: Path '{input_path}' does not exist![/bold red]"
+        )
+        return
+
+    output_path = typer.prompt("Enter output path", default="output")
+    target_format = (
+        typer.prompt("Enter target format (e.g., png, pdf, mp3, mp4)").strip().lower()
+    )
+
+    if not target_format:
+        console.print("[bold red]Error: Target format cannot be empty![/bold red]")
+        return
+
+    overwrite = typer.confirm("Overwrite existing files?", default=False)
+
+    def run_conversion(converter_class, valid_extensions, **kwargs):
+        if os.path.isdir(input_path):
+            run_batch_conversion(
+                input_path,
+                output_path,
+                valid_extensions,
+                converter_class,
+                target_format,
+                overwrite,
+                **kwargs,
+            )
+        else:
+            out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            conv = converter_class(
+                input_path, out_path, overwrite=overwrite, **kwargs
+            )
+            conv.convert()
+
+    try:
+        if choice == "1":
+            quality = typer.prompt("Quality (0-100)", type=int, default=95)
+            if not (0 <= quality <= 100):
+                console.print("[bold red]Quality must be between 0 and 100![/bold red]")
+                return
+            grayscale = typer.confirm("Convert to grayscale?", default=False)
+            run_conversion(
+                ImageConverter,
+                FileHandler.EXT_IMAGE,
+                quality=quality,
+                grayscale=grayscale,
+            )
+
+        elif choice == "2":
+            run_conversion(DocsConverter, FileHandler.EXT_DOCS)
+
+        elif choice == "3":
+            bitrate = typer.prompt("Audio bitrate (e.g., 192k)", default="192k")
+            run_conversion(AudioConverter, FileHandler.EXT_AUDIO, bitrate=bitrate)
+
+        elif choice == "4":
+            run_conversion(VideoConverter, FileHandler.EXT_VIDEO)
+
+        console.print("[bold green]Operation finished successfully![/bold green]")
+
+    except Exception as e:
+        console.print(f"[bold red]An unexpected error occurred: {e}[/bold red]")
 
 
 @image_app.command(
@@ -319,13 +425,13 @@ def convert_video(
     input_path: str = typer.Option(..., "--input", "-i", help="Source video path."),
     output_path: str = typer.Option(..., "--output", "-o", help="Target video path."),
     bitrate: str = typer.Option(
-        "2000k",
+        "5000k",
         "--bitrate",
         "-b",
         help="Target video bitrate (e.g., 1000k, 5000k).",
     ),
     resolution: str = typer.Option(
-        "720p",
+        "1080p",
         "--resolution",
         "-r",
         help="Target resolution (e.g., 480p, 720p, 1080p).",
@@ -389,13 +495,13 @@ def batch_video(
         None, "--format", "-f", help="Target video format (e.g., mp4, avi, mkv, mov)."
     ),
     bitrate: str = typer.Option(
-        "2000k",
+        "5000k",
         "--bitrate",
         "-b",
         help="Target video bitrate for all files.",
     ),
     resolution: str = typer.Option(
-        "720p",
+        "1080p",
         "--resolution",
         "-r",
         help="Target resolution for all files.",

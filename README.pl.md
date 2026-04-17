@@ -17,6 +17,12 @@ pip install pillow typer tqdm pypandoc pymupdf pydub ffmpeg-python
 
 ## Użycie
 
+### Tryb Interaktywny
+Projekt wyposażono w łatwy w obsłudze asystent krok-po-kroku, aby nie pisać poleceń z pamięci:
+```bash
+python main.py interactive
+```
+
 ### Obrazy
 
 ```bash
@@ -167,11 +173,11 @@ python main.py video batch -i ./filmy -o ./wyniki --format mkv --codec h265
 |-------|-------|------|-----------|
 | `--input` | `-i` | Plik wejściowy | *(wymagane)* |
 | `--output` | `-o` | Plik wyjściowy | *(wymagane)* |
-| `--bitrate` | `-b` | Bitrate wideo (np. 2000k) | `2000k` |
-| `--resolution`| `-r` | Rozdzielczość docelowa (np. 720p, 1080p)| `720p` |
+| `--bitrate` | `-b` | Bitrate wideo (np. 5000k) | `5000k` |
+| `--resolution`| `-r` | Rozdzielczość docelowa (np. 720p, 1080p)| `1080p` |   
 | `--fps` | `-f` | Klatki na sekundę (24–120) | `30` |
 | `--codec` | `-x` | Kodek wideo (h264, h265, vp9, av1) | `h264` |
-| `--audio-bitrate`|`-ab`| Bitrate audio (64k–320k) | `128k` |
+| `--audio-bitrate`|`-ab`| Bitrate audio (64k–320k) | `192k` |
 | `--audio-channels`|`-ac`| Kanały audio (1 lub 2) | `2` |
 | `--overwrite` | `-v` | Nadpisanie istniejącego pliku | `False` |
 

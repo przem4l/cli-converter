@@ -8,12 +8,13 @@ class AudioConverter(FileHandler, MediaConverterBase):
         self,
         input_path,
         output_path,
-        bitrate,
-        channels,
-        sample_rate,
-        gain,
-        trim,
+        bitrate="192k",
+        channels=2,
+        sample_rate=44100,
+        gain=0,
+        trim=0,
         overwrite=False,
+        **kwargs,
     ):
         super().__init__(input_path, output_path, overwrite=overwrite)
         self.bitrate = bitrate

@@ -38,42 +38,19 @@ class FileHandler:
             raise FileExistsError(
                 f"Output file {self.output_path} already exists! Use --overwrite to modify it."
             )
-        if (
-            self.output_ext in self.ext_docs and self.input_ext not in self.ext_docs
-        ) or (self.input_ext in self.ext_docs and self.output_ext not in self.ext_docs):
-            raise Exception("This type of conversion is not available!")
-        if (
-            self.output_ext in self.ext_image and self.input_ext not in self.ext_image
-        ) or (
-            self.input_ext in self.ext_image and self.output_ext not in self.ext_image
-        ):
-            raise Exception("This type of conversion is not available!")
-        if (
-            self.output_ext in self.ext_audio and self.input_ext not in self.ext_audio
-        ) or (
-            self.input_ext in self.ext_audio and self.output_ext not in self.ext_audio
-        ):
-            raise Exception("This type of conversion is not available!")
-        if (
-            self.output_ext in self.ext_video and self.input_ext not in self.ext_video
-        ) or (
-            self.input_ext in self.ext_video and self.output_ext not in self.ext_video
-        ):
-            raise Exception("This type of conversion is not available!")
-        if (
-            self.output_ext not in self.ext_docs
-            and self.output_ext not in self.ext_image
-            and self.output_ext not in self.ext_audio
-            and self.output_ext not in self.ext_video
-        ):
-            raise Exception("Wrong output file extenstion!")
-        if (
-            self.input_ext not in self.ext_docs
-            and self.input_ext not in self.ext_image
-            and self.input_ext not in self.ext_audio
-            and self.input_ext not in self.ext_video
-        ):
-            raise Exception("Wrong input file extension!")
+
+        groups = [self.EXT_DOCS, self.EXT_IMAGE, self.EXT_AUDIO, self.EXT_VIDEO]
+        
+        # Determine current group
+        input_group = next((g for g in groups if self.input_ext in g), None)
+        output_group = next((g for g in groups if self.output_ext in g), None)
+
+        if not input_group:
+            raise ValueError(f"Input extension '{self.input_ext}' is not supported.")
+        if not output_group:
+            raise ValueError(f"Output extension '{self.output_ext}' is not supported.")
+        if input_group != output_group:
+            raise ValueError(f"Conversion from {self.input_ext} to {self.output_ext} is not allowed (cross-type).")
 
     @property
     def input_ext(self):
