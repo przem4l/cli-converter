@@ -1,5 +1,4 @@
 import os
-from PIL import Image
 from utils.file_handler import FileHandler
 
 
@@ -27,6 +26,11 @@ class ImageConverter(FileHandler):
         self.delete = delete
 
     def convert(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            raise ImportError("Install Pillow to process image files (pip install Pillow).")
+
         if self.input_ext == ".heic":
             try:
                 from pillow_heif import register_heif_opener

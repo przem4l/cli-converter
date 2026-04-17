@@ -1,8 +1,9 @@
 import shutil
-import ffmpeg
 from utils.file_handler import FileHandler
+from converter.base_processor import MediaConverterBase
 
-class VideoConverter(FileHandler):
+
+class VideoConverter(FileHandler, MediaConverterBase):
     def __init__(
         self,
         input_path,
@@ -12,7 +13,7 @@ class VideoConverter(FileHandler):
         fps,
         codec,
         audio_bitrate,
-        audio_channels,
+        audio_channel,
         overwrite=False,
     ):
         super().__init__(input_path, output_path, overwrite=overwrite)
@@ -21,14 +22,16 @@ class VideoConverter(FileHandler):
         self.fps = fps
         self.codec = codec
         self.audio_bitrate = audio_bitrate
-        self.audio_channels = audio_channels
+        self.audio_channels = audio_channel
         self.validate_values()
 
     def convert(self):
-        if not shutil.which("ffmpeg") and not shutil.which("avconv"):
-            raise EnvironmentError(
-                "FFmpeg is missing! Please install FFmpeg and add it to your system PATH."
-            )
+        try:
+            import ffmpeg
+        except ImportError:
+            raise ImportError("Install ffmpeg-python to process video files (pip install ffmpeg-python).")
+
+        self.check_ffmpeg()
 
         stream = ffmpeg.input(self.input_path)
         scale = f"scale=-2:{self.resolution_value}"
@@ -36,7 +39,7 @@ class VideoConverter(FileHandler):
             "h264": "libx264",
             "h265": "libx265",
             "vp9": "libvpx-vp9",
-            "av1": "libaom-av1"
+            "av1": "libaom-av1",
         }
         stream = ffmpeg.output(
             stream,
@@ -47,7 +50,7 @@ class VideoConverter(FileHandler):
             r=self.fps,
             acodec="aac",
             audio_bitrate=self.audio_bitrate,
-            ac=self.audio_channels
+            ac=self.audio_channels,
         )
 
         ffmpeg.run(stream, overwrite_output=True)
@@ -70,11 +73,11 @@ class VideoConverter(FileHandler):
         resolution = int(resolution_number_part)
         if resolution < 240 or resolution > 2160:
             raise ValueError("Resolution must be in range [240, 2160]p")
-        self.resolution_value = resolution 
+        self.resolution_value = resolution
 
         if self.fps < 24 or self.fps > 120:
             raise ValueError("FPS must be in range [24, 120]")
-        
+
         if self.codec not in ["h264", "h265", "vp9", "av1"]:
             raise ValueError("Unsupported codec")
 
