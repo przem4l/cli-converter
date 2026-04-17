@@ -30,10 +30,10 @@ app.add_typer(video_app, name="video")
 
 
 def validate_hw(height: int, width: int):
-    if height is None or width is None:
+    if height is None and width is None:
         return None
-    if height <= 0 or width <= 0:
-        raise Exception("Resolution must be a positive number!")
+    if (height is not None and height <= 0) or (width is not None and width <= 0):
+        raise ValueError("Dimensions must be positive integers!")
     return (width, height)
 
 
@@ -56,6 +56,8 @@ def run_batch_conversion(
     input_dir, output_dir, valid_ext, converter_class, format, overwrite, **kwargs
 ):
     files = prepare_batch(input_dir, output_dir, valid_ext)
+    total_files = len(files)
+    failed_files = 0
 
     for file in progress_bar(files, desc="Converting"):
         in_path = os.path.join(input_dir, file)
@@ -67,9 +69,16 @@ def run_batch_conversion(
             )
             converter.convert()
         except Exception as e:
+            failed_files += 1
             typer.echo(f"Failed to process {file}: {e}")
 
-    typer.echo("Batch conversion completed.")
+    if total_files > 0 and failed_files == total_files:
+        typer.echo(f"Batch conversion failed: All {total_files} files encountered errors.")
+        raise typer.Exit(code=1)
+    elif failed_files > 0:
+        typer.echo(f"Batch conversion completed with {failed_files} errors out of {total_files} files.")
+    else:
+        typer.echo("Batch conversion completed successfully.")
 
 
 @app.command("interactive", help="Enter interactive mode.")

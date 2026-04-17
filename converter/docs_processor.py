@@ -1,4 +1,5 @@
 import os
+import shutil
 from utils.file_handler import FileHandler
 
 
@@ -6,8 +7,17 @@ class DocsConverter(FileHandler):
     def __init__(self, input_path, output_path, overwrite=False, **kwargs):
         super().__init__(input_path, output_path, overwrite=overwrite)
 
+    def check_pandoc(self):
+        if not shutil.which("pandoc"):
+            raise EnvironmentError(
+                "Pandoc is missing! Please install Pandoc and add it to your system PATH."
+            )
+
     def convert(self):
         self.validate_libraries()
+        if self.input_ext != ".pdf":
+            self.check_pandoc()
+            
         if self.input_ext == ".pdf":
             if self.output_ext == ".txt":
                 self.pdf_to_txt()
