@@ -36,6 +36,9 @@ class ImageConverter(FileHandler):
             if not isinstance(self.resize, tuple) or len(self.resize) != 2:
                 raise ValueError("Resize must be a tuple of (width, height)")
             width, height = self.resize
+            if width is None and height is None:
+                self.resize = None
+                return
             if (width is not None and width <= 0) or (height is not None and height <= 0):
                 raise ValueError("Resize dimensions must be positive integers")
 
