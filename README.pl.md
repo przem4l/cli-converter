@@ -177,6 +177,15 @@ python main.py video batch -i ./filmy -o ./wyniki --format mkv --codec h265
 
 **Obsługiwane formaty:** `.mp4` `.avi` `.mkv` `.mov`
 
+**Obsługiwane konwersje:**
+
+| Z \ Na    | MP4 | AVI | MKV | MOV |
+|-----------|-----|-----|-----|-----|
+| MP4       | ✅  | ✅  | ✅  | ✅   |
+| AVI       | ✅  | ✅  | ✅  | ✅   |
+| MKV       | ✅  | ✅  | ✅  | ✅   |
+| MOV       | ✅  | ✅  | ✅  | ✅   |
+
 **Walidacja:**
 - FFmpeg musi być zainstalowany i dostępny w PATH systemowym
 - Rozdzielczość musi być w zakresie `[240, 2160]p`
