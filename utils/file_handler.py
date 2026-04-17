@@ -6,6 +6,7 @@ class FileHandler:
     EXT_DOCS = (".docx", ".pdf", ".txt", ".odt")
     EXT_IMAGE = (".png", ".jpg", ".jpeg", ".webp", ".heic", ".raw")
     EXT_AUDIO = (".mp3", ".wav", ".ogg", ".flac")
+    EXT_VIDEO = (".mp4", ".avi", ".mkv", ".mov")
 
     def __init__(self, input_path, output_path, overwrite=False):
         self.input_path = input_path
@@ -14,6 +15,7 @@ class FileHandler:
         self.ext_docs = self.EXT_DOCS
         self.ext_image = self.EXT_IMAGE
         self.ext_audio = self.EXT_AUDIO
+        self.ext_video = self.EXT_VIDEO
         self.validate()
 
     def validate(self):
@@ -53,15 +55,23 @@ class FileHandler:
         ):
             raise Exception("This type of conversion is not available!")
         if (
+            self.output_ext in self.ext_video and self.input_ext not in self.ext_video
+        ) or (
+            self.input_ext in self.ext_video and self.output_ext not in self.ext_video
+        ):
+            raise Exception("This type of conversion is not available!")
+        if (
             self.output_ext not in self.ext_docs
             and self.output_ext not in self.ext_image
             and self.output_ext not in self.ext_audio
+            and self.output_ext not in self.ext_video
         ):
             raise Exception("Wrong output file extenstion!")
         if (
             self.input_ext not in self.ext_docs
             and self.input_ext not in self.ext_image
             and self.input_ext not in self.ext_audio
+            and self.input_ext not in self.ext_video
         ):
             raise Exception("Wrong input file extension!")
 

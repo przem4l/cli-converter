@@ -1,9 +1,9 @@
 import shutil
 from utils.file_handler import FileHandler
-from pydub import AudioSegment
+from converter.base_processor import MediaConverterBase
 
 
-class AudioConverter(FileHandler):
+class AudioConverter(FileHandler, MediaConverterBase):
     def __init__(
         self,
         input_path,
@@ -24,10 +24,12 @@ class AudioConverter(FileHandler):
         self.validate_values()
 
     def convert(self):
-        if not shutil.which("ffmpeg") and not shutil.which("avconv"):
-            raise EnvironmentError(
-                "FFmpeg is missing! Please install FFmpeg and add it to your system PATH."
-            )
+        try:
+            from pydub import AudioSegment
+        except ImportError:
+            raise ImportError("Install pydub to process audio files (pip install pydub).")
+
+        self.check_ffmpeg()
 
         audio = AudioSegment.from_file(self.input_path)
 

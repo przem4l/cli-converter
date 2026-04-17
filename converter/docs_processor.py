@@ -1,4 +1,4 @@
-import os, pypandoc, fitz
+import os
 from utils.file_handler import FileHandler
 
 
@@ -17,6 +17,8 @@ class DocsConverter(FileHandler):
             self.pandoc_convert()
 
     def pdf_to_txt(self):
+        import fitz
+
         doc = fitz.open(self.input_path)
         text = ""
         for page in doc:
@@ -25,6 +27,8 @@ class DocsConverter(FileHandler):
             file.write(text)
 
     def pandoc_convert(self):
+        import pypandoc
+
         out_format = (
             "plain" if self.output_ext == ".txt" else self.output_ext.strip(".")
         )
@@ -54,9 +58,9 @@ class DocsConverter(FileHandler):
         try:
             import pypandoc
         except ImportError:
-            print("Install pypandoc")
+            raise ImportError("Install pypandoc to process documents (pip install pypandoc).")
 
         try:
             import fitz
         except ImportError:
-            print("Install pymupdf")
+            raise ImportError("Install pymupdf to process PDFs (pip install pymupdf).")
