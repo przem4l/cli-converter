@@ -17,6 +17,12 @@ pip install pillow typer tqdm pypandoc pymupdf pydub ffmpeg-python
 
 ## Usage
 
+### Interactive Mode
+The tool features an interactive prompt for guided conversions without remembering flags:
+```bash
+python main.py interactive
+```
+
 ### Images
 
 ```bash
@@ -167,11 +173,11 @@ python main.py video batch -i ./videos -o ./output --format mkv --codec h265
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source video path | *(required)* |
 | `--output` | `-o` | Target video path | *(required)* |
-| `--bitrate` | `-b` | Video bitrate (e.g., 2000k) | `2000k` |
-| `--resolution`| `-r` | Target resolution (e.g., 720p, 1080p)| `720p` |
+| `--bitrate` | `-b` | Video bitrate (e.g., 5000k) | `5000k` |
+| `--resolution`| `-r` | Target resolution (e.g., 720p, 1080p)| `1080p` |        
 | `--fps` | `-f` | Frames per second (24–120) | `30` |
 | `--codec` | `-x` | Video codec (h264, h265, vp9, av1) | `h264` |
-| `--audio-bitrate`|`-ab`| Audio bitrate (64k–320k) | `128k` |
+| `--audio-bitrate`|`-ab`| Audio bitrate (64k–320k) | `192k` |
 | `--audio-channels`|`-ac`| Audio channels (1 or 2) | `2` |
 | `--overwrite` | `-v` | Overwrite existing file | `False` |
 

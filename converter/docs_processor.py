@@ -3,7 +3,7 @@ from utils.file_handler import FileHandler
 
 
 class DocsConverter(FileHandler):
-    def __init__(self, input_path, output_path, overwrite=False):
+    def __init__(self, input_path, output_path, overwrite=False, **kwargs):
         super().__init__(input_path, output_path, overwrite=overwrite)
 
     def convert(self):

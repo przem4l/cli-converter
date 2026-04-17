@@ -4,8 +4,13 @@ from converter.image_processor import ImageConverter
 from converter.docs_processor import DocsConverter
 from converter.audio_processor import AudioConverter
 from converter.video_processor import VideoConverter
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 from utils.file_handler import FileHandler
 from cli.display import progress_bar
+
+console = Console()
 
 app = typer.Typer(
     help="A versatile File Converter CLI for Images, Documents and Audio."
@@ -65,6 +70,149 @@ def run_batch_conversion(
             typer.echo(f"Failed to process {file}: {e}")
 
     typer.echo("Batch conversion completed.")
+
+
+@app.command("interactive", help="Enter interactive mode.")
+def interactive_mode():
+    console.print(
+        Panel("[bold cyan]CLI Converter - Interactive Mode[/bold cyan]", expand=False)
+    )
+
+    table = Table(show_header=False, box=None)
+    table.add_row("[1]", "Image Conversion")
+    table.add_row("[2]", "Document Conversion")
+    table.add_row("[3]", "Audio Conversion")
+    table.add_row("[4]", "Video Conversion")
+    table.add_row("[q]", "Quit")
+    console.print(table)
+
+    choice = typer.prompt("Choose an option", default="1")
+
+    if choice == "q":
+        raise typer.Exit()
+
+    if choice not in ["1", "2", "3", "4"]:
+        console.print("[bold red]Invalid option![/bold red]")
+        return
+
+    input_path = typer.prompt("Enter input file or directory path", default=".")
+
+    if not os.path.exists(input_path):
+        console.print(
+            f"[bold red]Error: Path '{input_path}' does not exist![/bold red]"
+        )
+        return
+
+    output_path = typer.prompt("Enter output path", default="output")
+    target_format = (
+        typer.prompt("Enter target format (e.g., png, pdf, mp3, mp4)").strip().lower()
+    )
+
+    if not target_format:
+        console.print("[bold red]Error: Target format cannot be empty![/bold red]")
+        return
+
+    overwrite = typer.confirm("Overwrite existing files?", default=False)
+
+    try:
+        if choice == "1":
+            quality = typer.prompt("Quality (0-100)", type=int, default=95)
+            if not (0 <= quality <= 100):
+                console.print("[bold red]Quality must be between 0 and 100![/bold red]")
+                return
+
+            grayscale = typer.confirm("Convert to grayscale?", default=False)
+
+            if os.path.isdir(input_path):
+                run_batch_conversion(
+                    input_path,
+                    output_path,
+                    (".jpg", ".jpeg", ".png", ".webp", ".heic"),
+                    ImageConverter,
+                    target_format,
+                    overwrite,
+                    quality=quality,
+                    grayscale=grayscale,
+                )
+            else:
+                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
+                converter = ImageConverter(
+                    input_path,
+                    out_path,
+                    overwrite=overwrite,
+                    quality=quality,
+                    grayscale=grayscale,
+                )
+                converter.convert()
+
+        elif choice == "2":
+            if os.path.isdir(input_path):
+                run_batch_conversion(
+                    input_path,
+                    output_path,
+                    (".pdf", ".docx", ".txt", ".odt"),
+                    DocsConverter,
+                    target_format,
+                    overwrite,
+                )
+            else:
+                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
+                converter = DocsConverter(
+                    input_path, out_path, overwrite=overwrite
+                )
+                converter.convert()
+
+        elif choice == "3":
+            bitrate = typer.prompt("Audio bitrate (e.g., 192k)", default="192k")
+            if os.path.isdir(input_path):
+                run_batch_conversion(
+                    input_path,
+                    output_path,
+                    (".mp3", ".wav", ".ogg", ".flac"),
+                    AudioConverter,
+                    target_format,
+                    overwrite,
+                    bitrate=bitrate,
+                )
+            else:
+                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
+                converter = AudioConverter(
+                    input_path,
+                    out_path,
+                    overwrite=overwrite,
+                    bitrate=bitrate,
+                )
+                converter.convert()
+
+        elif choice == "4":
+            if os.path.isdir(input_path):
+                run_batch_conversion(
+                    input_path,
+                    output_path,
+                    (".mp4", ".avi", ".mkv", ".mov"),
+                    VideoConverter,
+                    target_format,
+                    overwrite,
+                )
+            else:
+                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
+                converter = VideoConverter(
+                    input_path, out_path, overwrite=overwrite
+                )
+                converter.convert()
+
+        console.print("[bold green]Operation finished successfully![/bold green]")
+
+    except Exception as e:
+        console.print(f"[bold red]An unexpected error occurred: {e}[/bold red]")
 
 
 @image_app.command(

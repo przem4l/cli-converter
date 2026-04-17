@@ -7,14 +7,15 @@ class ImageConverter(FileHandler):
         self,
         input_path,
         output_path,
-        quality,
-        resize,
-        grayscale,
-        keep_aspect_ratio,
-        optimize,
-        rotate,
-        overwrite,
-        delete,
+        quality=95,
+        resize=None,
+        grayscale=False,
+        keep_aspect_ratio=False,
+        optimize=False,
+        rotate=0,
+        overwrite=False,
+        delete=False,
+        **kwargs,
     ):
         super().__init__(input_path, output_path, overwrite=overwrite)
         self.quality = quality
@@ -24,6 +25,18 @@ class ImageConverter(FileHandler):
         self.optimize = optimize
         self.rotate = rotate
         self.delete = delete
+        self.validate_values()
+
+    def validate_values(self):
+        if self.quality < 0 or self.quality > 100:
+            raise ValueError("Quality must be in range [0, 100]")
+        if self.rotate < -360 or self.rotate > 360:
+            raise ValueError("Rotate must be in range [-360, 360]")
+        if self.resize is not None:
+            if not isinstance(self.resize, tuple) or len(self.resize) != 2:
+                raise ValueError("Resize must be a tuple of (width, height)")
+            if self.resize[0] <= 0 or self.resize[1] <= 0:
+                raise ValueError("Resize dimensions must be positive integers")
 
     def convert(self):
         try:

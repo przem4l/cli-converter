@@ -8,13 +8,14 @@ class VideoConverter(FileHandler, MediaConverterBase):
         self,
         input_path,
         output_path,
-        bitrate,
-        resolution,
-        fps,
-        codec,
-        audio_bitrate,
-        audio_channel,
+        bitrate="5000k",
+        resolution="1080p",
+        fps=30,
+        codec="h264",
+        audio_bitrate="192k",
+        audio_channel=2,
         overwrite=False,
+        **kwargs,
     ):
         super().__init__(input_path, output_path, overwrite=overwrite)
         self.bitrate = bitrate
