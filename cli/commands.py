@@ -123,100 +123,49 @@ def interactive_mode():
 
     overwrite = typer.confirm("Overwrite existing files?", default=False)
 
+    def run_conversion(converter_class, valid_extensions, **kwargs):
+        if os.path.isdir(input_path):
+            run_batch_conversion(
+                input_path,
+                output_path,
+                valid_extensions,
+                converter_class,
+                target_format,
+                overwrite,
+                **kwargs,
+            )
+        else:
+            out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            conv = converter_class(
+                input_path, out_path, overwrite=overwrite, **kwargs
+            )
+            conv.convert()
+
     try:
         if choice == "1":
             quality = typer.prompt("Quality (0-100)", type=int, default=95)
             if not (0 <= quality <= 100):
                 console.print("[bold red]Quality must be between 0 and 100![/bold red]")
                 return
-
             grayscale = typer.confirm("Convert to grayscale?", default=False)
-
-            if os.path.isdir(input_path):
-                run_batch_conversion(
-                    input_path,
-                    output_path,
-                    (".jpg", ".jpeg", ".png", ".webp", ".heic"),
-                    ImageConverter,
-                    target_format,
-                    overwrite,
-                    quality=quality,
-                    grayscale=grayscale,
-                )
-            else:
-                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
-                if not os.path.exists(output_path):
-                    os.makedirs(output_path)
-                converter = ImageConverter(
-                    input_path,
-                    out_path,
-                    overwrite=overwrite,
-                    quality=quality,
-                    grayscale=grayscale,
-                )
-                converter.convert()
+            run_conversion(
+                ImageConverter,
+                FileHandler.EXT_IMAGE,
+                quality=quality,
+                grayscale=grayscale,
+            )
 
         elif choice == "2":
-            if os.path.isdir(input_path):
-                run_batch_conversion(
-                    input_path,
-                    output_path,
-                    (".pdf", ".docx", ".txt", ".odt"),
-                    DocsConverter,
-                    target_format,
-                    overwrite,
-                )
-            else:
-                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
-                if not os.path.exists(output_path):
-                    os.makedirs(output_path)
-                converter = DocsConverter(
-                    input_path, out_path, overwrite=overwrite
-                )
-                converter.convert()
+            run_conversion(DocsConverter, FileHandler.EXT_DOCS)
 
         elif choice == "3":
             bitrate = typer.prompt("Audio bitrate (e.g., 192k)", default="192k")
-            if os.path.isdir(input_path):
-                run_batch_conversion(
-                    input_path,
-                    output_path,
-                    (".mp3", ".wav", ".ogg", ".flac"),
-                    AudioConverter,
-                    target_format,
-                    overwrite,
-                    bitrate=bitrate,
-                )
-            else:
-                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
-                if not os.path.exists(output_path):
-                    os.makedirs(output_path)
-                converter = AudioConverter(
-                    input_path,
-                    out_path,
-                    overwrite=overwrite,
-                    bitrate=bitrate,
-                )
-                converter.convert()
+            run_conversion(AudioConverter, FileHandler.EXT_AUDIO, bitrate=bitrate)
 
         elif choice == "4":
-            if os.path.isdir(input_path):
-                run_batch_conversion(
-                    input_path,
-                    output_path,
-                    (".mp4", ".avi", ".mkv", ".mov"),
-                    VideoConverter,
-                    target_format,
-                    overwrite,
-                )
-            else:
-                out_path = get_output_path(os.path.basename(input_path), output_path, target_format)
-                if not os.path.exists(output_path):
-                    os.makedirs(output_path)
-                converter = VideoConverter(
-                    input_path, out_path, overwrite=overwrite
-                )
-                converter.convert()
+            run_conversion(VideoConverter, FileHandler.EXT_VIDEO)
 
         console.print("[bold green]Operation finished successfully![/bold green]")
 
@@ -476,13 +425,13 @@ def convert_video(
     input_path: str = typer.Option(..., "--input", "-i", help="Source video path."),
     output_path: str = typer.Option(..., "--output", "-o", help="Target video path."),
     bitrate: str = typer.Option(
-        "2000k",
+        "5000k",
         "--bitrate",
         "-b",
         help="Target video bitrate (e.g., 1000k, 5000k).",
     ),
     resolution: str = typer.Option(
-        "720p",
+        "1080p",
         "--resolution",
         "-r",
         help="Target resolution (e.g., 480p, 720p, 1080p).",
@@ -546,13 +495,13 @@ def batch_video(
         None, "--format", "-f", help="Target video format (e.g., mp4, avi, mkv, mov)."
     ),
     bitrate: str = typer.Option(
-        "2000k",
+        "5000k",
         "--bitrate",
         "-b",
         help="Target video bitrate for all files.",
     ),
     resolution: str = typer.Option(
-        "720p",
+        "1080p",
         "--resolution",
         "-r",
         help="Target resolution for all files.",

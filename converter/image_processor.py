@@ -35,7 +35,8 @@ class ImageConverter(FileHandler):
         if self.resize is not None:
             if not isinstance(self.resize, tuple) or len(self.resize) != 2:
                 raise ValueError("Resize must be a tuple of (width, height)")
-            if self.resize[0] <= 0 or self.resize[1] <= 0:
+            width, height = self.resize
+            if (width is not None and width <= 0) or (height is not None and height <= 0):
                 raise ValueError("Resize dimensions must be positive integers")
 
     def convert(self):
@@ -74,9 +75,21 @@ class ImageConverter(FileHandler):
         if self.rotate != 0:
             img = img.rotate(self.rotate, expand=True)
         if self.resize and self.keep_aspect_ratio:
-            img.thumbnail(self.resize)
+            w, h = self.resize
+            if w is None or h is None:
+                orig_w, orig_h = img.size
+                if w is None:
+                    w = int(orig_w * (h / orig_h))
+                else:
+                    h = int(orig_h * (w / orig_w))
+            img.thumbnail((w, h))
         elif self.resize and not self.keep_aspect_ratio:
-            img = img.resize(self.resize)
+            w, h = self.resize
+            if w is None or h is None:
+                orig_w, orig_h = img.size
+                w = w or orig_w
+                h = h or orig_h
+            img = img.resize((w, h))
 
         img.save(self.output_path, quality=self.quality, optimize=self.optimize)
         if self.delete:
