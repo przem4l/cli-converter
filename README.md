@@ -7,11 +7,11 @@ A command-line tool for converting images, documents and audio files. Supports s
 ## Requirements
 
 ```bash
-pip install pillow typer tqdm pypandoc pymupdf pydub
+pip install pillow typer tqdm pypandoc pymupdf pydub ffmpeg-python
 ```
 
 > `pypandoc` requires [Pandoc](https://pandoc.org/installing.html) to be installed.  
-> `pydub` requires [FFmpeg](https://ffmpeg.org/download.html) to be installed and available in system PATH.  
+> `pydub` and `ffmpeg-python` require [FFmpeg](https://ffmpeg.org/download.html) to be installed and available in system PATH.  
 > HEIC support requires `pip install pillow-heif`.  
 > RAW support requires `pip install rawpy`.
 
@@ -148,6 +148,42 @@ python main.py audio batch -i ./music -o ./output --format flac
 - `--samplerate` must be one of: `16000`, `22050`, `44100`, `48000`
 - `--channels` must be `1` (mono) or `2` (stereo)
 - `--gain` must be between `−30` and `+30` dB
+
+---
+
+### Video
+
+```bash
+# Single conversion
+python main.py video convert -i movie.mp4 -o movie.avi --resolution 1080p --fps 60
+
+# Batch conversion
+python main.py video batch -i ./videos -o ./output --format mkv --codec h265
+```
+
+#### Options `video convert`
+
+| Flag | Short | Description | Default |
+|------|-------|-------------|---------|
+| `--input` | `-i` | Source video path | *(required)* |
+| `--output` | `-o` | Target video path | *(required)* |
+| `--bitrate` | `-b` | Video bitrate (e.g., 2000k) | `2000k` |
+| `--resolution`| `-r` | Target resolution (e.g., 720p, 1080p)| `720p` |
+| `--fps` | `-f` | Frames per second (24–120) | `30` |
+| `--codec` | `-x` | Video codec (h264, h265, vp9, av1) | `h264` |
+| `--audio-bitrate`|`-ab`| Audio bitrate (64k–320k) | `128k` |
+| `--audio-channels`|`-ac`| Audio channels (1 or 2) | `2` |
+| `--overwrite` | `-v` | Overwrite existing file | `False` |
+
+**Supported formats:** `.mp4` `.avi` `.mkv` `.mov`
+
+**Validation rules:**
+- FFmpeg must be installed and available in PATH
+- Resolution must be in range `[240, 2160]p`
+- FPS must be between `24` and `120`
+- Supported codecs: `h264`, `h265`, `vp9`, `av1`
+- Audio bitrate must be in range `[64, 320]k`
+- Audio channels must be `1` or `2`
 - `--trim` must be a non-negative value and cannot exceed the audio duration
 - If output file already exists, use `--overwrite` to replace it
 - Cross-category conversions (e.g. audio → image) are not allowed
@@ -156,18 +192,23 @@ python main.py audio batch -i ./music -o ./output --format flac
 
 ## Project Structure
 
-```
-├── main.py
+```text
+cli-converter/
 ├── cli/
-│   ├── __init__.py
-│   ├── commands.py        # CLI commands (Typer)
-│   └── display.py         # Progress bar (tqdm)
+│   ├── commands.py      # CLI logic and sub-apps
+│   ├── display.py       # Terminal UI and progress bars
+│   └── __init__.py
 ├── converter/
-│   ├── __init__.py
-│   ├── image_processor.py # Image conversion (Pillow)
-│   ├── docs_processor.py  # Document conversion (pypandoc, pymupdf)
-│   └── audio_processor.py # Audio conversion (pydub)
-└── utils/
-    ├── __init__.py
-    └── file_handler.py    # File validation and path handling
+│   ├── audio_processor.py # Pydub logic
+│   ├── base_processor.py  # Shared media base class
+│   ├── docs_processor.py  # Pandoc/Fitz logic
+│   ├── image_processor.py # Pillow logic
+│   ├── video_processor.py # FFmpeg logic
+│   └── __init__.py
+├── utils/
+│   ├── file_handler.py    # Path and extension validation
+│   └── __init__.py
+├── main.py                # Entry point
+├── README.md              # English documentation
+└── README.pl.md           # Polish documentation
 ```

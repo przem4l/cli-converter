@@ -7,11 +7,11 @@ Narzędzie wiersza poleceń do konwersji obrazów, dokumentów i plików audio. 
 ## Wymagania
 
 ```bash
-pip install pillow typer tqdm pypandoc pymupdf pydub
+pip install pillow typer tqdm pypandoc pymupdf pydub ffmpeg-python
 ```
 
 > `pypandoc` wymaga zainstalowanego [Pandoc](https://pandoc.org/installing.html).  
-> `pydub` wymaga zainstalowanego [FFmpeg](https://ffmpeg.org/download.html) dostępnego w PATH systemowym.  
+> `pydub` i `ffmpeg-python` wymagają zainstalowanego [FFmpeg](https://ffmpeg.org/download.html) dostępnego w PATH systemowym.  
 > Obsługa HEIC wymaga `pip install pillow-heif`.  
 > Obsługa RAW wymaga `pip install rawpy`.
 
@@ -148,26 +148,67 @@ python main.py audio batch -i ./muzyka -o ./wyniki --format flac
 - `--samplerate` musi być jedną z wartości: `16000`, `22050`, `44100`, `48000`
 - `--channels` musi wynosić `1` (mono) lub `2` (stereo)
 - `--gain` musi mieścić się w przedziale od `−30` do `+30` dB
+
+---
+
+### Video
+
+```bash
+# Pojedyncza konwersja
+python main.py video convert -i film.mp4 -o film.avi --resolution 1080p --fps 60
+
+# Wsadowa konwersja katalogu
+python main.py video batch -i ./filmy -o ./wyniki --format mkv --codec h265
+```
+
+#### Opcje `video convert`
+
+| Flaga | Skrót | Opis | Domyślnie |
+|-------|-------|------|-----------|
+| `--input` | `-i` | Plik wejściowy | *(wymagane)* |
+| `--output` | `-o` | Plik wyjściowy | *(wymagane)* |
+| `--bitrate` | `-b` | Bitrate wideo (np. 2000k) | `2000k` |
+| `--resolution`| `-r` | Rozdzielczość docelowa (np. 720p, 1080p)| `720p` |
+| `--fps` | `-f` | Klatki na sekundę (24–120) | `30` |
+| `--codec` | `-x` | Kodek wideo (h264, h265, vp9, av1) | `h264` |
+| `--audio-bitrate`|`-ab`| Bitrate audio (64k–320k) | `128k` |
+| `--audio-channels`|`-ac`| Kanały audio (1 lub 2) | `2` |
+| `--overwrite` | `-v` | Nadpisanie istniejącego pliku | `False` |
+
+**Obsługiwane formaty:** `.mp4` `.avi` `.mkv` `.mov`
+
+**Walidacja:**
+- FFmpeg musi być zainstalowany i dostępny w PATH systemowym
+- Rozdzielczość musi być w zakresie `[240, 2160]p`
+- FPS musi mieścić się w przedziale od `24` do `120`
+- Obsługiwane kodeki: `h264`, `h265`, `vp9`, `av1`
+- Bitrate audio musi być w zakresie `[64, 320]k`
+- Liczba kanałów audio musi wynosić `1` lub `2`
 - `--trim` musi być wartością nieujemną i nie może przekraczać długości pliku audio
 - Jeśli plik wyjściowy już istnieje, użyj `--overwrite`, aby go nadpisać
 - Konwersje między kategoriami (np. audio → obraz) są niedozwolone
 
 ---
 
-## Struktura projektu
+## Struktura Projektu
 
-```
-├── main.py
+```text
+cli-converter/
 ├── cli/
-│   ├── __init__.py
-│   ├── commands.py        # Komendy CLI (Typer)
-│   └── display.py         # Pasek postępu (tqdm)
+│   ├── commands.py      # Logika CLI i pod-aplikacje
+│   ├── display.py       # UI terminala i paski postępu
+│   └── __init__.py
 ├── converter/
-│   ├── __init__.py
-│   ├── image_processor.py # Konwersja obrazów (Pillow)
-│   ├── docs_processor.py  # Konwersja dokumentów (pypandoc, pymupdf)
-│   └── audio_processor.py # Konwersja audio (pydub)
-└── utils/
-    ├── __init__.py
-    └── file_handler.py    # Walidacja plików i ścieżek
+│   ├── audio_processor.py # Logika Pydub
+│   ├── base_processor.py  # Bazowa klasa dla multimediów
+│   ├── docs_processor.py  # Logika Pandoc/Fitz
+│   ├── image_processor.py # Logika Pillow
+│   ├── video_processor.py # Logika FFmpeg
+│   └── __init__.py
+├── utils/
+│   ├── file_handler.py    # Walidacja ścieżek i rozszerzeń
+│   └── __init__.py
+├── main.py                # Punkt wejścia
+├── README.md              # Dokumentacja angielska
+└── README.pl.md           # Dokumentacja polska
 ```
