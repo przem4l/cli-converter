@@ -51,6 +51,17 @@ class FileHandler:
             raise ValueError(f"Output extension '{self.output_ext}' is not supported.")
         if input_group != output_group:
             raise ValueError(f"Conversion from {self.input_ext} to {self.output_ext} is not allowed (cross-type).")
+        
+    def get_size(self, path: str):
+        return os.path.getsize(path)
+    
+    def convert_to_megabytes(self, size_bytes: int):
+        return round(size_bytes / (1024 * 1024), 2)
+    
+    def get_savings_percent(self, before: int, after: int):
+        if before == 0:
+            return 0.0
+        return round((1 - (after / before)) * 100, 2)
 
     @property
     def input_ext(self):

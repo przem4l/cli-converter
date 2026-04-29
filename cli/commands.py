@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from utils.file_handler import FileHandler
-from cli.display import progress_bar
+from cli.display import progress_bar, show_conversion_stats
 
 console = Console()
 
@@ -68,6 +68,7 @@ def run_batch_conversion(
                 in_path, out_path, overwrite=overwrite, **kwargs
             )
             converter.convert()
+            show_conversion_stats(converter)
         except Exception as e:
             failed_files += 1
             typer.echo(f"Failed to process {file}: {e}")
@@ -142,6 +143,7 @@ def interactive_mode():
                 input_path, out_path, overwrite=overwrite, **kwargs
             )
             conv.convert()
+            show_conversion_stats(conv)
 
     try:
         if choice == "1":
@@ -226,6 +228,7 @@ def convert_image(
             delete,
         )
         converter.convert()
+        show_conversion_stats(converter)
         typer.echo(f"Success: Image saved to {output_path}")
     except Exception as e:
         typer.echo(f"Error: {e}")
@@ -285,6 +288,7 @@ def convert_document(
     try:
         converter = DocsConverter(input_path, output_path, overwrite)
         converter.convert()
+        show_conversion_stats(converter)
         typer.echo(f"Success: Document converted to {output_path}")
     except Exception as e:
         typer.echo(f"Document Error: {e}")

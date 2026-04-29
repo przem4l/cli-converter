@@ -23,6 +23,9 @@ The tool features an interactive prompt for guided conversions without rememberi
 python main.py interactive
 ```
 
+### Statistics
+After a successful conversion, the tool will display the statistics showing space saved or increased during the process with color-coded terminal text.
+
 ### Images
 
 ```bash
