@@ -23,6 +23,9 @@ Projekt wyposażono w łatwy w obsłudze asystent krok-po-kroku, aby nie pisać 
 python main.py interactive
 ```
 
+### Podsumowanie i Statystyki
+Po każdej udanej konwersji, aplikacja wypisze estetyczne podsumowanie porównujące rozmiary plików (wejściowy vs wyjściowy) wraz z odpowiednio kolorowanym (zielony/czerwony) procentowym zaoszczędzeniem miejsca.
+
 ### Obrazy
 
 ```bash
