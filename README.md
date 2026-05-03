@@ -41,7 +41,7 @@ python main.py image batch -i ./photos -o ./output --format webp
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Input file | *(required)* |
-| `--output` | `-o` | Output file | *(required)* |
+| `--output` | `-o` | Output file | *(optional, prompts if ommited)* |
 | `--quality` | `-q` | Quality (0–100) | `95` |
 | `--height` | `-h` | Height in pixels | `None` |
 | `--width` | `-w` | Width in pixels | `None` |
@@ -92,7 +92,7 @@ python main.py doc batch -i ./documents -o ./output --format txt
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source document path | *(required)* |
-| `--output` | `-o` | Target document path | *(required)* |
+| `--output` | `-o` | Target document path | *(optional, prompts if ommited)* |
 | `--overwrite` | `-v` | Overwrite existing file | `False` |
 
 **Supported formats:** `.pdf` `.docx` `.txt` `.odt`
@@ -132,7 +132,7 @@ python main.py audio batch -i ./music -o ./output --format flac
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source audio path | *(required)* |
-| `--output` | `-o` | Target audio path | *(required)* |
+| `--output` | `-o` | Target audio path | *(optional, prompts if ommited)* |
 | `--bitrate` | `-b` | Output bitrate | `192k` |
 | `--channels` | `-c` | Number of channels (1 or 2) | `2` |
 | `--samplerate` | `-s` | Sample rate in Hz | `44100` |
@@ -175,7 +175,7 @@ python main.py video batch -i ./videos -o ./output --format mkv --codec h265
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source video path | *(required)* |
-| `--output` | `-o` | Target video path | *(required)* |
+| `--output` | `-o` | Target video path | *(optional, prompts if ommited)* |
 | `--bitrate` | `-b` | Video bitrate (e.g., 5000k) | `5000k` |
 | `--resolution`| `-r` | Target resolution (e.g., 720p, 1080p)| `1080p` |        
 | `--fps` | `-f` | Frames per second (24–120) | `30` |
