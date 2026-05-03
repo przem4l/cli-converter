@@ -7,6 +7,7 @@ from converter.video_processor import VideoConverter
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.prompt import Prompt
 from utils.file_handler import FileHandler
 from cli.display import progress_bar, show_conversion_stats
 
@@ -175,6 +176,18 @@ def interactive_mode():
         console.print(f"[bold red]An unexpected error occurred: {e}[/bold red]")
 
 
+def handle_missing_output(input_path: str, valid_extensions: tuple, format_name: str) -> str:
+    console.print(f"[bold yellow]Output path not provided.[/bold yellow]")
+    exts = [ext.strip(".") for ext in valid_extensions]
+    format_choice = Prompt.ask(
+        f"Select target {format_name} format",
+        choices=exts,
+        default=exts[0]
+    )
+    base_name = os.path.splitext(input_path)[0]
+    return f"{base_name}.{format_choice}"
+
+
 @image_app.command(
     "convert", help="Convert a single image with optional filters and transformations."
 )
@@ -183,7 +196,7 @@ def convert_image(
         ..., "--input", "-i", help="Path to the input image file."
     ),
     output_path: str = typer.Option(
-        ..., "--output", "-o", help="Path where the output image will be saved."
+        None, "--output", "-o", help="Path where the output image will be saved. If omitted, you will be prompted."
     ),
     quality: int = typer.Option(
         95, "--quality", "-q", help="Output image quality. [0, 100]"
@@ -213,6 +226,9 @@ def convert_image(
         False, "--delete", "-d", help="Delete the source file after conversion."
     ),
 ):
+    if output_path is None:
+        output_path = handle_missing_output(input_path, FileHandler.EXT_IMAGE, "image")
+        
     resize = validate_hw(height, width)
     try:
         converter = ImageConverter(
@@ -279,12 +295,15 @@ def batch_images(
 def convert_document(
     input_path: str = typer.Option(..., "--input", "-i", help="Source document path."),
     output_path: str = typer.Option(
-        ..., "--output", "-o", help="Target document path."
+        None, "--output", "-o", help="Target document path. If omitted, you will be prompted."
     ),
     overwrite: bool = typer.Option(
         False, "--overwrite", "-v", help="Overwrite the output file if it exists."
     ),
 ):
+    if output_path is None:
+        output_path = handle_missing_output(input_path, FileHandler.EXT_DOCS, "document")
+        
     try:
         converter = DocsConverter(input_path, output_path, overwrite)
         converter.convert()
@@ -320,7 +339,7 @@ def batch_documents(
 )
 def convert_audio(
     input_path: str = typer.Option(..., "--input", "-i", help="Source audio path."),
-    output_path: str = typer.Option(..., "--output", "-o", help="Target audio path."),
+    output_path: str = typer.Option(None, "--output", "-o", help="Target audio path. If omitted, you will be prompted."),
     bitrate: str = typer.Option(
         "192k",
         "--bitrate",
@@ -349,6 +368,8 @@ def convert_audio(
         False, "--overwrite", "-v", help="Overwrite the output file if it exists."
     ),
 ):
+    if output_path is None:
+        output_path = handle_missing_output(input_path, FileHandler.EXT_AUDIO, "audio")
 
     try:
         converter = AudioConverter(
@@ -427,7 +448,7 @@ def batch_audio(
 )
 def convert_video(
     input_path: str = typer.Option(..., "--input", "-i", help="Source video path."),
-    output_path: str = typer.Option(..., "--output", "-o", help="Target video path."),
+    output_path: str = typer.Option(None, "--output", "-o", help="Target video path. If omitted, you will be prompted."),
     bitrate: str = typer.Option(
         "5000k",
         "--bitrate",
@@ -468,6 +489,9 @@ def convert_video(
         False, "--overwrite", "-v", help="Overwrite the output file if it exists."
     ),
 ):
+    if output_path is None:
+        output_path = handle_missing_output(input_path, FileHandler.EXT_VIDEO, "video")
+
     try:
         converter = VideoConverter(
             input_path,

@@ -41,7 +41,7 @@ python main.py image batch -i ./zdjecia -o ./wyniki --format webp
 | Flaga | Skrót | Opis | Domyślnie |
 |-------|-------|------|-----------|
 | `--input` | `-i` | Plik wejściowy | *(wymagane)* |
-| `--output` | `-o` | Plik wyjściowy | *(wymagane)* |
+| `--output` | `-o` | Plik wyjściowy | *(opcjonalne, zapytanie)* |
 | `--quality` | `-q` | Jakość (0–100) | `95` |
 | `--height` | `-h` | Wysokość w pikselach | `None` |
 | `--width` | `-w` | Szerokość w pikselach | `None` |
@@ -92,7 +92,7 @@ python main.py doc batch -i ./dokumenty -o ./wyniki --format txt
 | Flaga | Skrót | Opis | Domyślnie |
 |-------|-------|------|-----------|
 | `--input` | `-i` | Plik wejściowy | *(wymagane)* |
-| `--output` | `-o` | Plik wyjściowy | *(wymagane)* |
+| `--output` | `-o` | Plik wyjściowy | *(opcjonalne, zapytanie)* |
 | `--overwrite` | `-v` | Nadpisanie istniejącego pliku | `False` |
 
 **Obsługiwane formaty:** `.pdf` `.docx` `.txt` `.odt`
@@ -132,7 +132,7 @@ python main.py audio batch -i ./muzyka -o ./wyniki --format flac
 | Flaga | Skrót | Opis | Domyślnie |
 |-------|-------|------|-----------|
 | `--input` | `-i` | Plik wejściowy | *(wymagane)* |
-| `--output` | `-o` | Plik wyjściowy | *(wymagane)* |
+| `--output` | `-o` | Plik wyjściowy | *(opcjonalne, zapytanie)* |
 | `--bitrate` | `-b` | Bitrate wyjściowy | `192k` |
 | `--channels` | `-c` | Liczba kanałów (1 lub 2) | `2` |
 | `--samplerate` | `-s` | Częstotliwość próbkowania w Hz | `44100` |
@@ -175,7 +175,7 @@ python main.py video batch -i ./filmy -o ./wyniki --format mkv --codec h265
 | Flaga | Skrót | Opis | Domyślnie |
 |-------|-------|------|-----------|
 | `--input` | `-i` | Plik wejściowy | *(wymagane)* |
-| `--output` | `-o` | Plik wyjściowy | *(wymagane)* |
+| `--output` | `-o` | Plik wyjściowy | *(opcjonalne, zapytanie)* |
 | `--bitrate` | `-b` | Bitrate wideo (np. 5000k) | `5000k` |
 | `--resolution`| `-r` | Rozdzielczość docelowa (np. 720p, 1080p)| `1080p` |   
 | `--fps` | `-f` | Klatki na sekundę (24–120) | `30` |
