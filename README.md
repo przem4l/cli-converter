@@ -82,7 +82,7 @@ python main.py image batch -i ./photos -o ./output --format webp
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Input file | *(required)* |
-| `--output` | `-o` | Output file | *(optional, prompts if ommited)* |
+| `--output` | `-o` | Output file | *(optional, prompts if omitted)* |
 | `--quality` | `-q` | Quality (0–100) | `95` |
 | `--height` | `-h` | Height in pixels | `None` |
 | `--width` | `-w` | Width in pixels | `None` |
@@ -133,7 +133,7 @@ python main.py doc batch -i ./documents -o ./output --format txt
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source document path | *(required)* |
-| `--output` | `-o` | Target document path | *(optional, prompts if ommited)* |
+| `--output` | `-o` | Target document path | *(optional, prompts if omitted)* |
 | `--overwrite` | `-v` | Overwrite existing file | `False` |
 
 **Supported formats:** `.pdf` `.docx` `.txt` `.odt`
@@ -173,7 +173,7 @@ python main.py audio batch -i ./music -o ./output --format flac
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source audio path | *(required)* |
-| `--output` | `-o` | Target audio path | *(optional, prompts if ommited)* |
+| `--output` | `-o` | Target audio path | *(optional, prompts if omitted)* |
 | `--bitrate` | `-b` | Output bitrate | `192k` |
 | `--channels` | `-c` | Number of channels (1 or 2) | `2` |
 | `--samplerate` | `-s` | Sample rate in Hz | `44100` |
@@ -216,7 +216,7 @@ python main.py video batch -i ./videos -o ./output --format mkv --codec h265
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--input` | `-i` | Source video path | *(required)* |
-| `--output` | `-o` | Target video path | *(optional, prompts if ommited)* |
+| `--output` | `-o` | Target video path | *(optional, prompts if omitted)* |
 | `--bitrate` | `-b` | Video bitrate (e.g., 5000k) | `5000k` |
 | `--resolution`| `-r` | Target resolution (e.g., 720p, 1080p)| `1080p` |        
 | `--fps` | `-f` | Frames per second (24–120) | `30` |
@@ -243,7 +243,6 @@ python main.py video batch -i ./videos -o ./output --format mkv --codec h265
 - Supported codecs: `h264`, `h265`, `vp9`, `av1`
 - Audio bitrate must be in range `[64, 320]k`
 - Audio channels must be `1` or `2`
-- `--trim` must be a non-negative value and cannot exceed the audio duration
 - If output file already exists, use `--overwrite` to replace it
 - Cross-category conversions (e.g. audio → image) are not allowed
 

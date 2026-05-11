@@ -243,7 +243,6 @@ python main.py video batch -i ./filmy -o ./wyniki --format mkv --codec h265
 - Obsługiwane kodeki: `h264`, `h265`, `vp9`, `av1`
 - Bitrate audio musi być w zakresie `[64, 320]k`
 - Liczba kanałów audio musi wynosić `1` lub `2`
-- `--trim` musi być wartością nieujemną i nie może przekraczać długości pliku audio
 - Jeśli plik wyjściowy już istnieje, użyj `--overwrite`, aby go nadpisać
 - Konwersje między kategoriami (np. audio → obraz) są niedozwolone
 
