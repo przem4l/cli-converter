@@ -17,6 +17,47 @@ pip install pillow typer tqdm pypandoc pymupdf pydub ffmpeg-python
 
 ## Użycie
 
+### Docker
+Możesz uruchomić narzędzie korzystając z platformy Docker, bez konieczności instalowania zależności w systemie bazowym.
+
+Zbuduj obraz:
+```bash
+docker build -t cli-converter .
+```
+
+### Przykłady użycia (Docker)
+
+#### Tryb interaktywny (Zalecany)
+Najprostszy sposób użycia. Asystent przeprowadzi Cię przez proces krok po kroku:
+```bash
+docker run --rm -it -v "$(pwd):/data" cli-converter interactive
+```
+*Gdy zostaniesz zapytany o ścieżkę, możesz po prostu wpisać `mojezdjecie.png`, jeśli znajduje się w obecnym folderze.*
+
+#### Konwersja zdjęcia (zmiana rozmiaru i skala szarości)
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter image convert -i wejscie.png -o wyjscie.jpg --width 800 --grayscale
+```
+
+#### Zbiorcza konwersja audio (do MP3)
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter audio batch -i folder_z_muzyka -o wyniki_mp3 --format mp3 --bitrate 320k
+```
+
+#### Dokument do pliku tekstowego
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter doc convert -i raport.docx -o raport.txt
+```
+
+#### Zmiana rozdzielczości i kodeka wideo
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter video convert -i film.mp4 -o film_720p.mkv --resolution 720p --codec h265
+```
+
+### Użycie (Lokalny Python)
+
+Jeśli masz zainstalowane wszystkie zależności lokalnie:
+
 ### Tryb Interaktywny
 Projekt wyposażono w łatwy w obsłudze asystent krok-po-kroku, aby nie pisać poleceń z pamięci:
 ```bash

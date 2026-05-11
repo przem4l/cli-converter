@@ -38,7 +38,17 @@ def validate_hw(height: int, width: int):
     return (width, height)
 
 
+def resolve_docker_path(path: str) -> str:
+    """If in Docker and path doesn't exist, try prefixing with /data."""
+    if os.environ.get("IS_DOCKER") and not os.path.isabs(path) and not os.path.exists(path):
+        docker_path = os.path.join("/data", path)
+        if os.path.exists(docker_path):
+            return docker_path
+    return path
+
+
 def prepare_batch(input_dir: str, output_dir: str, valid_ext: tuple):
+    input_dir = resolve_docker_path(input_dir)
     files = [f for f in os.listdir(input_dir) if f.lower().endswith(valid_ext)]
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -107,6 +117,7 @@ def interactive_mode():
         return
 
     input_path = typer.prompt("Enter input file or directory path", default=".")
+    input_path = resolve_docker_path(input_path)
 
     if not os.path.exists(input_path):
         console.print(
@@ -115,6 +126,18 @@ def interactive_mode():
         return
 
     output_path = typer.prompt("Enter output path", default="output")
+
+    # Docker path helper for output: if using default or relative path in Docker, 
+    # default to /data/output if /data exists
+    if os.environ.get("IS_DOCKER") and not os.path.isabs(output_path):
+        if output_path == "output":
+            output_path = "/data/output"
+        else:
+            docker_out = os.path.join("/data", output_path)
+            # We don't require it to exist yet, but we'll prefer /data if it's there
+            if os.path.exists("/data"):
+                output_path = docker_out
+
     target_format = (
         typer.prompt("Enter target format (e.g., png, pdf, mp3, mp4)").strip().lower()
     )
@@ -226,8 +249,11 @@ def convert_image(
         False, "--delete", "-d", help="Delete the source file after conversion."
     ),
 ):
+    input_path = resolve_docker_path(input_path)
     if output_path is None:
         output_path = handle_missing_output(input_path, FileHandler.EXT_IMAGE, "image")
+    else:
+        output_path = resolve_docker_path(output_path)
         
     resize = validate_hw(height, width)
     try:
@@ -272,6 +298,8 @@ def batch_images(
         help="Target image format. {png, jpg, jpeg, webp, heic, raw}",
     ),
 ):
+    input_dir = resolve_docker_path(input_dir)
+    output_dir = resolve_docker_path(output_dir)
     run_batch_conversion(
         input_dir,
         output_dir,
@@ -301,8 +329,11 @@ def convert_document(
         False, "--overwrite", "-v", help="Overwrite the output file if it exists."
     ),
 ):
+    input_path = resolve_docker_path(input_path)
     if output_path is None:
         output_path = handle_missing_output(input_path, FileHandler.EXT_DOCS, "document")
+    else:
+        output_path = resolve_docker_path(output_path)
         
     try:
         converter = DocsConverter(input_path, output_path, overwrite)
@@ -329,6 +360,8 @@ def batch_documents(
         False, "--overwrite", "-v", help="Overwrite existing files in output directory."
     ),
 ):
+    input_dir = resolve_docker_path(input_dir)
+    output_dir = resolve_docker_path(output_dir)
     run_batch_conversion(
         input_dir, output_dir, FileHandler.EXT_DOCS, DocsConverter, format, overwrite
     )
@@ -368,8 +401,11 @@ def convert_audio(
         False, "--overwrite", "-v", help="Overwrite the output file if it exists."
     ),
 ):
+    input_path = resolve_docker_path(input_path)
     if output_path is None:
         output_path = handle_missing_output(input_path, FileHandler.EXT_AUDIO, "audio")
+    else:
+        output_path = resolve_docker_path(output_path)
 
     try:
         converter = AudioConverter(
@@ -428,6 +464,8 @@ def batch_audio(
         False, "--overwrite", "-v", help="Overwrite existing files in output directory."
     ),
 ):
+    input_dir = resolve_docker_path(input_dir)
+    output_dir = resolve_docker_path(output_dir)
     run_batch_conversion(
         input_dir,
         output_dir,
@@ -489,8 +527,11 @@ def convert_video(
         False, "--overwrite", "-v", help="Overwrite the output file if it exists."
     ),
 ):
+    input_path = resolve_docker_path(input_path)
     if output_path is None:
         output_path = handle_missing_output(input_path, FileHandler.EXT_VIDEO, "video")
+    else:
+        output_path = resolve_docker_path(output_path)
 
     try:
         converter = VideoConverter(
@@ -562,6 +603,8 @@ def batch_video(
         False, "--overwrite", "-v", help="Overwrite existing files in output directory."
     ),
 ):
+    input_dir = resolve_docker_path(input_dir)
+    output_dir = resolve_docker_path(output_dir)
     run_batch_conversion(
         input_dir,
         output_dir,

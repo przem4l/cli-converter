@@ -17,6 +17,47 @@ pip install pillow typer tqdm pypandoc pymupdf pydub ffmpeg-python
 
 ## Usage
 
+### Docker
+You can run the tool using Docker without installing dependencies on your host system.
+
+Build the image:
+```bash
+docker build -t cli-converter .
+```
+
+### Usage Examples (Docker)
+
+#### Interactive Mode (Recommended)
+This is the easiest way to use the tool. It guides you through the process:
+```bash
+docker run --rm -it -v "$(pwd):/data" cli-converter interactive
+```
+*When prompted for a file, you can just type `myimage.png` if it's in your current folder.*
+
+#### Single Image Conversion (with Resize and Grayscale)
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter image convert -i input.png -o output.jpg --width 800 --grayscale
+```
+
+#### Batch Audio Conversion (to MP3)
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter audio batch -i music_folder -o mp3_output --format mp3 --bitrate 320k
+```
+
+#### Document to Text
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter doc convert -i report.docx -o report.txt
+```
+
+#### Video Resize and Codec change
+```bash
+docker run --rm -v "$(pwd):/data" cli-converter video convert -i movie.mp4 -o smaller_movie.mkv --resolution 720p --codec h265
+```
+
+### Usage (Local Python)
+
+If you have all dependencies installed locally:
+
 ### Interactive Mode
 The tool features an interactive prompt for guided conversions without remembering flags:
 ```bash
